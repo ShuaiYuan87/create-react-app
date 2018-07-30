@@ -49,6 +49,10 @@ class App extends Component {
     this.setState({modalIsOpen: false});
   }
 
+  doNothing() {
+
+  }
+
   render() {
     return (
       <Router>
@@ -99,7 +103,7 @@ class App extends Component {
             }}/>
             <Route path="/hello" render={() => {
               return (
-                <Player url={this.state.url} portion="1"/>
+                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)}/>
               );
             }}/>
           </Switch>
