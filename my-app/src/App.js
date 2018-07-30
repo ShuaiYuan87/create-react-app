@@ -4,7 +4,9 @@ import Player from './player.js';
 import Modal from 'react-modal';
 import {
   BrowserRouter as Router,
-  Redirect
+  Route,
+  Link,
+  Switch,
 } from 'react-router-dom'
 
 const customStyles = {
@@ -24,7 +26,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false
+      modalIsOpen: false,
+      url: ""
     };
 
     this.openModal = this.openModal.bind(this);
@@ -32,8 +35,9 @@ class App extends Component {
     this.closeModal = this.closeModal.bind(this);
   }
 
-  openModal() {
+  openModal(u) {
     this.setState({modalIsOpen: true});
+    this.setState({url: u});
   }
 
   afterOpenModal() {
@@ -59,7 +63,11 @@ class App extends Component {
             >
 
               <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
-              <button onClick={this.closeModal}>close</button>
+              <button onClick={this.closeModal}>
+                <Link to="/hello">
+                  close
+                </Link>
+              </button>
               <div>I am a modal</div>
               <form>
                 <input />
@@ -77,11 +85,24 @@ class App extends Component {
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque id quam sapiente unde voluptatum alias vero debitis, magnam quis quod.</p>
             </div>
           </div>
-          <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)}/>
-          <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)}/>
-          <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)}/>
-          <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)}/>
-          <Player url="https://www.twitch.tv/fortnite" portion="0.2" openModal={this.openModal.bind(this)}/>
+          <Switch>
+            <Route exact path="/" render={() => {
+             return (
+                <div>
+                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)}/>
+                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)}/>
+                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)}/>
+                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)}/>
+                <Player url="https://www.twitch.tv/fortnite" portion="0.2" openModal={this.openModal.bind(this)}/>
+                </div>
+               );
+            }}/>
+            <Route path="/hello" render={() => {
+              return (
+                <Player url={this.state.url} portion="1"/>
+              );
+            }}/>
+          </Switch>
         </div>
       </Router>
     );

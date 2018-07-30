@@ -30,7 +30,7 @@ class Player extends React.Component {
               appId: '106676343020606'
             }
           }}
-          onStart={() => this.props.openModal()}
+          onStart={() => this.props.openModal(this.props.url)}
         />
       </div>
     )
