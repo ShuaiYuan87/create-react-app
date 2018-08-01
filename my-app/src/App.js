@@ -93,17 +93,17 @@ class App extends Component {
             <Route exact path="/" render={() => {
              return (
                 <div>
-                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)}/>
-                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)}/>
-                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)}/>
-                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)}/>
-                <Player url="https://www.twitch.tv/fortnite" portion="0.2" openModal={this.openModal.bind(this)}/>
+                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
+                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
+                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
+                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
+                <Player url="https://www.twitch.tv/fortnite" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
                 </div>
                );
             }}/>
             <Route path="/hello" render={() => {
               return (
-                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)}/>
+                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={true}/>
               );
             }}/>
           </Switch>

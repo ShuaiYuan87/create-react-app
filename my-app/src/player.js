@@ -16,6 +16,7 @@ class Player extends React.Component {
           url={this.props.url}
           width='100%'
           height='100%'
+          playing={this.props.playing}
           config={{
             youtube: {
               playerVars: { showinfo: 0, controls: 1 }
