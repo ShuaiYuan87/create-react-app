@@ -216,3 +216,48 @@ p {
   -webkit-transition: background 1s ease;
   transition: background 1s ease;
 }
+
+.message {
+  border-color: rgb(127, 127, 127);
+  color: rgba(240, 240, 250, 1);
+  border-width: 3px;
+  width: 220px;
+  min-height: 40px;
+  max-height: 120px;
+  position: relative;
+  border-radius: 16px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  margin-left: 80px;
+}
+
+.arrow {
+ content: ;
+ position: absolute;
+ border-style: solid;
+ border-width: 8px 8px 8px 0;
+ border-color: transparent rgba(0, 0, 0, 0.6);
+ display: block;
+ width: 0;
+ z-index: 1;
+ left: -8px;
+ top: 20%;
+}
+
+.head {
+  top: 10%;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  position: absolute;
+  display: block;
+  left: -65px;
+}
+
+.chatpane {
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  display: flex;
+  align-items: flex-end;
+}

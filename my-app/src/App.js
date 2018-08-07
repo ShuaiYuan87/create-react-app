@@ -8,6 +8,8 @@ import {
   Link,
   Switch,
 } from 'react-router-dom'
+import Chathead from './chatHead.js'
+import Chatpane from './chatPane.js'
 
 const customStyles = {
   content : {
@@ -27,12 +29,16 @@ class App extends Component {
     super(props)
     this.state = {
       modalIsOpen: false,
-      url: ""
+      url: "",
+      text: '',
+      chatheads: []
     };
 
     this.openModal = this.openModal.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this._add = this._add.bind(this);
+    this._addMessage = this._addMessage.bind(this);
   }
 
   openModal(u) {
@@ -51,6 +57,23 @@ class App extends Component {
 
   doNothing() {
 
+  }
+
+  _add(event) {
+    if(event.keyCode === 13){
+      this._addMessage(this.state.text);
+      this.setState({text: ''});
+    }
+  }
+
+  _addMessage(message: string) {
+    var chatheads = this.state.chatheads;
+    chatheads.push(
+      <Chathead text={message} />
+    );
+    this.setState({
+      chatheads: chatheads,
+    });
   }
 
   render() {
@@ -103,7 +126,26 @@ class App extends Component {
             }}/>
             <Route path="/hello" render={() => {
               return (
+                <div>
+                <input
+                  type="text"
+                  value={this.state.text}
+                  onChange={evt => this.setState({
+                    text: evt.target.value
+                  })}
+                  onKeyDown={evt => this._add(evt)}
+                  />
+                <button onClick={() => {
+                  this._addMessage(this.state.text)
+                  this.setState({text: ''});
+                }}>
+                  add chat
+                </button>
+                <Chatpane>
+                  {this.state.chatheads}
+                </Chatpane>
                 <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={true}/>
+                </div>
               );
             }}/>
           </Switch>
