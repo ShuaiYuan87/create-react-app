@@ -8,6 +8,7 @@ import {
   Link,
   Switch,
 } from 'react-router-dom'
+
 import Chathead from './chatHead.js'
 import Chatpane from './chatPane.js'
 
@@ -24,26 +25,30 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-class App extends Component {
+export class App extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       modalIsOpen: false,
       url: "",
       text: '',
-      chatheads: []
+      chatheads: [],
+      roomURL: ""
     };
 
     this.openModal = this.openModal.bind(this);
     this.afterOpenModal = this.afterOpenModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.setURL = this.setURL.bind(this);
     this._add = this._add.bind(this);
     this._addMessage = this._addMessage.bind(this);
   }
 
-  openModal(u) {
+  openModal(u, roomID) {
     this.setState({modalIsOpen: true});
     this.setState({url: u});
+    this.setState({roomURL: "/" + roomID});
   }
 
   afterOpenModal() {
@@ -53,6 +58,10 @@ class App extends Component {
 
   closeModal() {
     this.setState({modalIsOpen: false});
+  }
+
+  setURL(u) {
+    this.setState({url: u});
   }
 
   doNothing() {
@@ -76,6 +85,12 @@ class App extends Component {
     });
   }
 
+  componentDidMount() {
+
+
+
+  }
+
   render() {
     return (
       <Router>
@@ -91,7 +106,7 @@ class App extends Component {
 
               <h2 ref={subtitle => this.subtitle = subtitle}>Hello</h2>
               <button onClick={this.closeModal}>
-                <Link to="/hello">
+                <Link to={this.state.roomURL}>
                   close
                 </Link>
               </button>
@@ -110,6 +125,14 @@ class App extends Component {
               <img className="logo" src="http://www.returndates.com/backgrounds/narcos.logo.png" alt="narcos background" />
               <h2>Season 2 now available</h2>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque id quam sapiente unde voluptatum alias vero debitis, magnam quis quod.</p>
+              <input
+                type="text"
+                value={this.state.url}
+                onChange={evt => this.setState({
+                  url: evt.target.value
+                })}
+                />
+
             </div>
           </div>
           <Switch>
@@ -124,7 +147,7 @@ class App extends Component {
                 </div>
                );
             }}/>
-            <Route path="/hello" render={() => {
+            <Route path="/:roomID" render={({ match }) => {
               return (
                 <div>
                 <input
@@ -144,10 +167,11 @@ class App extends Component {
                 <Chatpane>
                   {this.state.chatheads}
                 </Chatpane>
-                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={true}/>
+                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID}/>
                 </div>
               );
             }}/>
+
           </Switch>
         </div>
       </Router>
