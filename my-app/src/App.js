@@ -11,7 +11,18 @@ import {
 
 import Chathead from './chatHead.js'
 import Chatpane from './chatPane.js'
+import io from 'socket.io-client'
 
+var UNIVERSE = 100000;
+var rid = Math.floor(Math.random() * UNIVERSE);
+var defaultRoomID = Math.floor(Math.random() * UNIVERSE);
+// var serverIP = '73.231.32.235';
+var serverIP = 'localhost';
+//var serverIP = 'lit-headland-2085.herokuapp.com';
+//var port = '80';
+var port = '8989';
+var socket = io.connect('http://' + serverIP + ':' + port);
+socket.emit('create', 'room' + defaultRoomID);
 const customStyles = {
   content : {
     top                   : '50%',
@@ -34,7 +45,8 @@ export class App extends Component {
       url: "",
       text: '',
       chatheads: [],
-      roomURL: ""
+      roomURL: "",
+      player: null
     };
 
     this.openModal = this.openModal.bind(this);
@@ -45,10 +57,13 @@ export class App extends Component {
     this._addMessage = this._addMessage.bind(this);
   }
 
-  openModal(u, roomID) {
+  openModal(u, roomID, player) {
     this.setState({modalIsOpen: true});
     this.setState({url: u});
     this.setState({roomURL: "/" + roomID});
+    console.log("openModal")
+    console.log(player)
+    this.setState({player: player});
   }
 
   afterOpenModal() {
@@ -137,17 +152,19 @@ export class App extends Component {
           </div>
           <Switch>
             <Route exact path="/" render={() => {
+
              return (
                 <div>
-                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
-                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
-                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
-                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
-                <Player url="https://www.twitch.tv/fortnite" portion="0.2" openModal={this.openModal.bind(this)} playing={false}/>
+                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
+                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
+                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
+                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
+                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
                 </div>
                );
             }}/>
             <Route path="/:roomID" render={({ match }) => {
+
               return (
                 <div>
                 <input
@@ -167,7 +184,7 @@ export class App extends Component {
                 <Chatpane>
                   {this.state.chatheads}
                 </Chatpane>
-                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID}/>
+                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID} socket={socket} rid={rid} init={false} player={this.state.player}/>
                 </div>
               );
             }}/>
