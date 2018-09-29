@@ -42,8 +42,8 @@ class Player extends React.Component {
     this.props.socket.emit('postData', JSON.stringify(message));
   }
 
-  checkRecieve = (data) => {
-    data = JSON.parse(data.message);
+  checkRecieve = (rawdata) => {
+    var data = JSON.parse(rawdata.message);
     console.log(data);
     var player_action;
     if(this.state.playing) {
@@ -51,16 +51,15 @@ class Player extends React.Component {
     } else {
       player_action = PlayerAction.PAUSE;
     }
-    // this.player = React.createRef()
-    console.log(this.state.player)
-    var time = this.state.player.current.getCurrentTime();
-    this.props.socket.emit('init', JSON.stringify(this.createMessage(false, this.props.rid, time, player_action, 0)));
+    this.setState({ playing: false })
+    var time = this.player.getCurrentTime()
+    this.props.socket.emit('init', JSON.stringify(this.createMessage(false, this.props.rid, time, PlayerAction.RELOAD, this.state.url)));
   }
 
-  // ref = (player) => {
-  //   this.player = player
-  //   console.log(this.player)
-  // }
+  ref = (player) => {
+    this.player = player
+    console.log(this.player)
+  }
 
   render() {
     const { url, playing, volume, muted, loop, played, loaded, duration, playbackRate } = this.state
@@ -74,8 +73,8 @@ class Player extends React.Component {
         onMouseOver={this.over}
         onMouseOut={this.out} >
         <ReactPlayer
-          ref={this.state.player}
-          url={this.props.url}
+          ref={this.ref}
+          url={this.state.url}
           width='100%'
           height='100%'
           playing={playing}
@@ -111,6 +110,7 @@ class Player extends React.Component {
     this.setState({
       opaque: true
     })
+    // this.player.seekTo(10);
   }
 
   onstart() {
@@ -129,14 +129,15 @@ class Player extends React.Component {
     this.initRecieve = this.initRecieve.bind(this)
     this.reloadRecieve = this.reloadRecieve.bind(this)
     this.state.init = this.props.init
+    this.state.url = this.props.url
     this.state.player = React.createRef()
-    console.log("constructor")
-    console.warn(this.state.player === null)
+    // console.log("constructor")
+    // console.warn(this.state.player === null)
   }
 
   componentDidMount() {
     if (!this.props.init) {
-      this.props.socket.emit('create', 'room' + this.props.room);
+      this.props.socket.emit('create', this.props.room);
     }
     this.props.socket.on('notification', this.messageRecieve);
     this.props.socket.on('check_state', this.checkRecieve);
@@ -146,22 +147,36 @@ class Player extends React.Component {
     // console.log(React.createRef())
   }
 
+  reload(url) {
+    console.log(url)
+    var message = this.createMessage(false, this.props.rid, 0, PlayerAction.RELOAD, this.props.url);
+    this.props.socket.emit('reload', JSON.stringify(message));
+    this.loadVideo(url);
+  }
+
   componentDidUpdate(prevProps) {
     // this.state.player = this.props.player
     console.log("componentDidUpdate")
-    console.log(this.state.player)
-    // console.log(React.createRef())
-    console.warn(this.state.player === null)
+    // if (this.state.url != this.props.url) {
+    //   var message = this.createMessage(false, this.props.rid, 0, PlayerAction.RELOAD, this.props.url);
+    //   this.props.socket.emit('reload', JSON.stringify(message));
+    //   this.state.url = this.props.url;
+    // }
+    // console.log(this.state.player)
+    // // console.log(React.createRef())
+    // console.warn(this.state.player === null)
   }
 
   createMessage(ack_msg_id, rid, time, action, vid) {
+
+    console.log("createMessage");
     var message = {
       clientTime: Date.now() / 1000,
       clientId: rid,
       playerTime: time,
       playerAction: action,
       videoId: vid,
-      roomId: "room".concat(this.props.room)
+      roomId: this.props.room
     };
     if (ack_msg_id) {
       message.ackMsgID = ack_msg_id;
@@ -213,6 +228,10 @@ class Player extends React.Component {
     this.loadVideo(data.videoId);
   }
 
+  loadVideo(url) {
+    this.state.url = url;
+  }
+
   applyActionToPlayer (data) {
     switch (data.playerAction) {
     case PlayerAction.PLAY:
@@ -224,9 +243,9 @@ class Player extends React.Component {
       }
       break;
     case PlayerAction.PAUSE:
-    if (this.state.playing) {
-      this.setState({ playing: false })
-    }
+      if (this.state.playing) {
+        this.setState({ playing: false })
+      }
       if (data.playerTime !== 0) {
         this.player.seekTo(data.playerTime);
       }
@@ -235,8 +254,11 @@ class Player extends React.Component {
       this.player.seekTo(data.playerTime);
       break;
     case PlayerAction.RELOAD:
-      // this.loadVideo(data.videoId);
-      // this.setState({playerState: PlayerState.PAUSED});
+      console.log(data.videoId)
+      this.loadVideo(data.videoId);
+      if (data.playerTime !== 0) {
+        this.player.seekTo(data.playerTime);
+      }
     }
   }
 }

@@ -60,11 +60,11 @@ io.on('connection', function(socket){
     console.log('a user connected');
     socket.on('create', function (room) {
         if (!(room in owner_map)) {
-            console.error('new room' + room);
+            console.error('new ' + room);
             owner_map[room] = socket;
         }
         else {
-            console.error('join room' + room);
+            console.error('join ' + room);
             var message = {
                 videoId : videoUrlByRoomID[room],
             };

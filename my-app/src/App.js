@@ -7,6 +7,7 @@ import {
   Route,
   Link,
   Switch,
+  Redirect,
 } from 'react-router-dom'
 
 import Chathead from './chatHead.js'
@@ -15,14 +16,15 @@ import io from 'socket.io-client'
 
 var UNIVERSE = 100000;
 var rid = Math.floor(Math.random() * UNIVERSE);
-var defaultRoomID = Math.floor(Math.random() * UNIVERSE);
+var defaultRoomID = 'room' + Math.floor(Math.random() * UNIVERSE);
 // var serverIP = '73.231.32.235';
 var serverIP = 'localhost';
 //var serverIP = 'lit-headland-2085.herokuapp.com';
 //var port = '80';
 var port = '8989';
 var socket = io.connect('http://' + serverIP + ':' + port);
-socket.emit('create', 'room' + defaultRoomID);
+var init = false;
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -42,7 +44,7 @@ export class App extends Component {
 
     this.state = {
       modalIsOpen: false,
-      url: "",
+      url: "https://www.dailymotion.com/video/x6q6f0w",
       text: '',
       chatheads: [],
       roomURL: "",
@@ -55,6 +57,7 @@ export class App extends Component {
     this.setURL = this.setURL.bind(this);
     this._add = this._add.bind(this);
     this._addMessage = this._addMessage.bind(this);
+    this.myRef = React.createRef();
   }
 
   openModal(u, roomID, player) {
@@ -109,7 +112,9 @@ export class App extends Component {
   render() {
     return (
       <Router>
+
         <div className='App'>
+
           <div>
             <Modal
               isOpen={this.state.modalIsOpen}
@@ -143,23 +148,32 @@ export class App extends Component {
               <input
                 type="text"
                 value={this.state.url}
-                onChange={evt => this.setState({
-                  url: evt.target.value
-                })}
+                onChange={evt => {
+                  this.setState({
+                    url: evt.target.value
+                  })
+                  }
+                }
+                onKeyDown={evt => {
+                  if (evt.keyCode === 13) {
+                    this.myRef.current.reload(evt.target.value)
+                    this.setState({
+                      url: evt.target.value
+                    })
+                  }
+                  }
+                }
                 />
 
             </div>
           </div>
           <Switch>
             <Route exact path="/" render={() => {
-
-             return (
+              init = true;
+              socket.emit('create', defaultRoomID);
+              return (
                 <div>
-                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
-                <Player url="https://vimeo.com/channels/staffpicks/222582596" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
-                <Player url="https://www.dailymotion.com/video/x6q6f0w" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
-                <Player url="https://www.youtube.com/watch?v=M7lc1UVf-VE" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
-                <Player url="https://www.youtube.com/watch?v=_DTHdyjYMEI" portion="0.2" openModal={this.openModal.bind(this)} playing={false} socket={socket} room={defaultRoomID} rid={rid} init={true}/>
+                <Redirect to={defaultRoomID} />
                 </div>
                );
             }}/>
@@ -184,7 +198,7 @@ export class App extends Component {
                 <Chatpane>
                   {this.state.chatheads}
                 </Chatpane>
-                <Player url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID} socket={socket} rid={rid} init={false} player={this.state.player}/>
+                <Player ref={this.myRef} url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID} socket={socket} rid={rid} init={init} />
                 </div>
               );
             }}/>
