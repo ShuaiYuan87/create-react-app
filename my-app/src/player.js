@@ -18,40 +18,37 @@ class Player extends React.Component {
     loop: false,
     opaque: false,
     modalIsOpen: false,
-    // socket: io.connect('http://' + serverIP + ':' + port),
-    // defaultRoomID: Math.floor(Math.random() * UNIVERSE),
     init: false,
-    // rid: Math.floor(Math.random() * UNIVERSE)
-    player: null
+    initiate: true
   }
 
   onPlay = () => {
-    console.log('onPlay')
-    this.setState({ playing: true })
-    var message = this.createMessage(false, this.props.rid, 0, PlayerAction.PLAY);
-    console.log(message);
-    // console.log(this.props.socket);
-    this.props.socket.emit('postData', JSON.stringify(message));
+    if (this.state.initiate) {
+      console.log('onPlay')
+      this.setState({ playing: true })
+      var message = this.createMessage(false, this.props.rid, 0, PlayerAction.PLAY);
+      console.log(message);
+      this.props.socket.emit('postData', JSON.stringify(message));
+    } else {
+      this.setState({ initiate: true})
+    }
   }
   onPause = () => {
-    console.log('onPause')
-    this.setState({ playing: false })
-    var message = this.createMessage(false, this.props.rid, 0, PlayerAction.PAUSE);
-    console.log(message);
-    // console.log(this.props.socket);
-    this.props.socket.emit('postData', JSON.stringify(message));
+    if (this.state.initiate) {
+      console.log('onPause')
+      this.setState({ playing: false })
+      var message = this.createMessage(false, this.props.rid, 0, PlayerAction.PAUSE);
+      console.log(message);
+      // console.log(this.props.socket);
+      this.props.socket.emit('postData', JSON.stringify(message));
+    } else {
+      this.setState({ initiate: true})
+    }
   }
 
   checkRecieve = (rawdata) => {
     var data = JSON.parse(rawdata.message);
     console.log(data);
-    var player_action;
-    if(this.state.playing) {
-      player_action = PlayerAction.PLAY;
-    } else {
-      player_action = PlayerAction.PAUSE;
-    }
-    this.setState({ playing: false })
     var time = this.player.getCurrentTime()
     this.props.socket.emit('init', JSON.stringify(this.createMessage(false, this.props.rid, time, PlayerAction.RELOAD, this.state.url)));
   }
@@ -229,10 +226,11 @@ class Player extends React.Component {
   }
 
   loadVideo(url) {
-    this.state.url = url;
+    this.setState({ url: url})
   }
 
   applyActionToPlayer (data) {
+    this.setState({ initiate: false})
     switch (data.playerAction) {
     case PlayerAction.PLAY:
       if (!this.state.playing) {
@@ -257,6 +255,7 @@ class Player extends React.Component {
       console.log(data.videoId)
       this.loadVideo(data.videoId);
       if (data.playerTime !== 0) {
+        this.setState({ playing: true });
         this.player.seekTo(data.playerTime);
       }
     }
