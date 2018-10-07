@@ -120,6 +120,7 @@ class Player extends React.Component {
             playing={playing}
             onPlay={this.onPlay}
             onPause={this.onPause}
+            onReady={() => console.log('onReady')}
             config={{
               youtube: {
                 playerVars: { showinfo: 0, controls: 1 }
@@ -261,6 +262,7 @@ class Player extends React.Component {
 
   loadVideo(url) {
     this.setState({ url: url})
+    // this.setState({ playing: true})
   }
 
   applyActionToPlayer (data) {
