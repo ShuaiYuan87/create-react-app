@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom'
 
 import Chathead from './chatHead.js'
-import Chatpane from './chatPane.js'
+import ChatPane from './chatPane.js'
 import io from 'socket.io-client'
 
 var UNIVERSE = 100000;
@@ -195,9 +195,9 @@ export class App extends Component {
                 }}>
                   add chat
                 </button>
-                <Chatpane>
+                <ChatPane>
                   {this.state.chatheads}
-                </Chatpane>
+                </ChatPane>
                 <Player ref={this.myRef} url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID} socket={socket} rid={rid} init={init} />
                 </div>
               );

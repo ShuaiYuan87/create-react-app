@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactPlayer from 'react-player'
+import './range.css'
 
 var PlayerAction = require('lib/player_action');
 var msg = require('lib/msg');
@@ -58,41 +59,86 @@ class Player extends React.Component {
     console.log(this.player)
   }
 
+  onSeekMouseDown = e => {
+    this.setState({ seeking: true })
+  }
+  onSeekChange = e => {
+    this.setState({ played: parseFloat(e.target.value) })
+  }
+  onSeekMouseUp = e => {
+    this.setState({ seeking: false })
+    var percentage = parseFloat(e.target.value)
+    // TODO: record total time on server side
+    var message = this.createMessage(false, this.props.rid, percentage * this.state.duration, PlayerAction.SEEK);
+    console.log(message);
+    this.props.socket.emit('postData', JSON.stringify(message));
+    this.player.seekTo(percentage)
+  }
+
+  onProgress = state => {
+    console.log('onProgress', state)
+    // We only want to update time slider if we are not currently seeking
+    if (!this.state.seeking) {
+      this.setState(state)
+    }
+  }
+
+  onDuration = (duration) => {
+    console.log('onDuration', duration)
+    this.setState({ duration })
+  }
+
   render() {
     const { url, playing, volume, muted, loop, played, loaded, duration, playbackRate } = this.state
     var w = window.innerWidth * this.props.portion
     var h = window.innerHeight * this.props.portion
 
     return (
-      <div
-        style={{'width': w, 'height': h, 'display': 'inline-block'}}
-        className={this.state.opaque ? 'opaque' : ''}
-        onMouseOver={this.over}
-        onMouseOut={this.out} >
-        <ReactPlayer
-          ref={this.ref}
-          url={this.state.url}
-          width='100%'
-          height='100%'
-          playing={playing}
-          onPlay={this.onPlay}
-          onPause={this.onPause}
-          config={{
-            youtube: {
-              playerVars: { showinfo: 0, controls: 1 }
-            },
-            vimeo: {
-              playerOptions: { byline: false }
-            },
-            dailymotion: {
-              params: { controls: 1 }
-            },
-            facebook: {
-              appId: '106676343020606'
-            }
-          }}
-          onStart={this.onstart}
-        />
+      <div>
+        <tr>
+          <th>Seek</th>
+          <td>
+            <input
+              type='range' min={0} max={1} step='any'
+              value={played}
+              onMouseDown={this.onSeekMouseDown}
+              onChange={this.onSeekChange}
+              onMouseUp={this.onSeekMouseUp}
+            />
+          </td>
+        </tr>
+        <div
+          style={{'width': w, 'height': h, 'display': 'inline-block'}}
+          className={this.state.opaque ? 'opaque' : ''}
+          onMouseOver={this.over}
+          onMouseOut={this.out} >
+          <ReactPlayer
+            ref={this.ref}
+            url={this.state.url}
+            width='100%'
+            height='100%'
+            playing={playing}
+            onPlay={this.onPlay}
+            onPause={this.onPause}
+            config={{
+              youtube: {
+                playerVars: { showinfo: 0, controls: 1 }
+              },
+              vimeo: {
+                playerOptions: { byline: false }
+              },
+              dailymotion: {
+                params: { controls: 1 }
+              },
+              facebook: {
+                appId: '106676343020606'
+              }
+            }}
+            onStart={this.onstart}
+            onProgress={this.onProgress}
+            onDuration={this.onDuration}
+          />
+        </div>
       </div>
     )
   }
@@ -127,9 +173,7 @@ class Player extends React.Component {
     this.reloadRecieve = this.reloadRecieve.bind(this)
     this.state.init = this.props.init
     this.state.url = this.props.url
-    this.state.player = React.createRef()
-    // console.log("constructor")
-    // console.warn(this.state.player === null)
+    console.log("constructor")
   }
 
   componentDidMount() {
@@ -140,8 +184,7 @@ class Player extends React.Component {
     this.props.socket.on('check_state', this.checkRecieve);
     this.props.socket.on('init', this.initRecieve);
     this.props.socket.on('reload', this.reloadRecieve);
-    console.log("componentDidMount")
-    // console.log(React.createRef())
+    console.log("componentDidMount");
   }
 
   reload(url) {
@@ -152,16 +195,7 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // this.state.player = this.props.player
     console.log("componentDidUpdate")
-    // if (this.state.url != this.props.url) {
-    //   var message = this.createMessage(false, this.props.rid, 0, PlayerAction.RELOAD, this.props.url);
-    //   this.props.socket.emit('reload', JSON.stringify(message));
-    //   this.state.url = this.props.url;
-    // }
-    // console.log(this.state.player)
-    // // console.log(React.createRef())
-    // console.warn(this.state.player === null)
   }
 
   createMessage(ack_msg_id, rid, time, action, vid) {

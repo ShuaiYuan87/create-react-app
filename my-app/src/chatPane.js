@@ -1,7 +1,7 @@
 import React from 'react'
 import {TransitionMotion, spring, presets} from 'react-motion'
 
-class Chatpane extends React.Component{
+class ChatPane extends React.Component{
 
    render(): Object {
     return (
@@ -57,4 +57,4 @@ class Chatpane extends React.Component{
   }
 }
 
-export default Chatpane
+export default ChatPane
