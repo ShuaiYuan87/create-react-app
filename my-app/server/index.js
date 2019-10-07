@@ -11,30 +11,10 @@
 //   s.write("welcome!\n");
 //   s.pipe(s);
 // }).listen(8989);
-var port = (process.env.PORT || 8989);
-const path = require('path');
-const express = require('express')
-const app = express();
-const server = require('http').createServer(app)
-const io = require('socket.io')(server)
-
-app.use(express.static(path.join(__dirname, '../react-ui/build')))
-
-app.get('/', (req, res, next) =>
-  res.sendFile('react-ui/build/index.html', { root: '.' }))
-
-app.get('/room*', (req, res, next) =>
-  res.sendFile('react-ui/build/index.html', { root: '.' }))
-
-server.listen(port)
-
-
-
-// var app = require('http').createServer()
-// app.listen(port);
-// var io = require('socket.io').listen(app)
-// , url = require('url')
-
+var port = (process.env.PORT || 8988);
+var app = require('http').createServer()
+app.listen(port);
+var io = require('socket.io').listen(app)
 var msg = require('../react-ui/src/lib/msg.js');
 var state = require('../react-ui/src/lib/player_state.js');
 var action = require('../react-ui/src/lib/player_action.js');

@@ -1,43 +1,22 @@
-// var fs = require('fs');
-// var express = require('express')();
-// var options = {
-//   key: fs.readFileSync('file.pem'),
-//   cert: fs.readFileSync('file.crt'),
-//   requestCert: false,
-//   rejectUnauthorized: false
-// };
+// var tls = require('tls');
+var fs = require('fs');
+var express = require('express')();
+var https = require('https');
+var options = {
+  key: fs.readFileSync('file.pem'),
+  cert: fs.readFileSync('file.crt'),
+  requestCert: false,
+  rejectUnauthorized: false
+};
 
-// var app = tls.createServer(options, function (s) {
-//   s.write("welcome!\n");
-//   s.pipe(s);
-// }).listen(8989);
-var port = (process.env.PORT || 8989);
-const path = require('path');
-const express = require('express')
-const app = express();
-const server = require('http').createServer(app)
-const io = require('socket.io')(server)
-
-app.use(express.static(path.join(__dirname, '../react-ui/build')))
-
-app.get('/', (req, res, next) =>
-  res.sendFile('react-ui/build/index.html', { root: '.' }))
-
-app.get('/room*', (req, res, next) =>
-  res.sendFile('react-ui/build/index.html', { root: '.' }))
-
-server.listen(port)
-
-
-
-// var app = require('http').createServer()
-// app.listen(port);
+// var app = require('https').createServer(options, express)
 // var io = require('socket.io').listen(app)
 // , url = require('url')
-
-var msg = require('../react-ui/src/lib/msg.js');
-var state = require('../react-ui/src/lib/player_state.js');
-var action = require('../react-ui/src/lib/player_action.js');
+var app = https.createServer(options, express);
+var io = require('socket.io').listen(app)
+var msg = require('./lib/msg.js');
+var state = require('./lib/player_state.js');
+var action = require('./lib/player_action.js');
 
 var last_player_time; //in seconds
 var last_server_time;
@@ -45,6 +24,7 @@ var latency = {};
 var current_state = state.PAUSED;
 var users = [];
 
+var port = 8989;
 process.argv.forEach(function (val, index, array) {
   if (index == 2) {
     port = parseInt(val, 10);
@@ -52,6 +32,7 @@ process.argv.forEach(function (val, index, array) {
 });
 
 console.error('Start listening at port: ' + port.toString());
+app.listen(port);
 
 last_player_time = 0;
 

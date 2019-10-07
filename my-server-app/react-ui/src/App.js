@@ -10,19 +10,22 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom'
-import background from './resources/633643.jpg';
+import background from './resources/rainbow.jpg';
 import logo from './resources/narcos.logo.png';
 import youtube from './resources/YouTube.jpg';
 import facebook from './resources/facebook.jpg';
 import vimeo from './resources/vimeo.jpg';
 import dailymotion from './resources/dailymotion.jpg';
 import io from 'socket.io-client'
+import ReactGA from 'react-ga';
 
 var UNIVERSE = 100000;
 var rid = Math.floor(Math.random() * UNIVERSE);
 var defaultRoomID = 'room' + Math.floor(Math.random() * UNIVERSE);
 var socket = io.connect();
 var init = false;
+ReactGA.initialize('UA-136827067-1');
+ReactGA.pageview('/');
 
 const customStyles = {
   content : {
@@ -163,7 +166,7 @@ export class App extends Component {
           </div>
           <div id="hero" className="Hero" style={{backgroundImage: "url("+background+")"}}>
             <div className="content">
-              <img className="logo" src={logo} alt="narcos background" />
+              {/*<img className="logo" src={logo} alt="narcos background" />*/}
               <div className="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="true" data-auto-logout-link="true" data-use-continue-as="true"></div>
               <p></p>
               <h2>Welcome to KeeKon, an experience lets you and your remote friends watch videos together!</h2>
@@ -208,9 +211,13 @@ export class App extends Component {
             </div>
           </div>
           <Switch>
-            <Route exact path="/" render={() => {
+            <Route exact path="/" render={({location}) => {
               init = true;
               socket.emit('create', defaultRoomID);
+              if (typeof window.ga === 'function') {
+                window.ga('set', 'page', location.pathname + location.search);
+                window.ga('send', 'pageview');
+              }
               return (
                 <div>
                 <Redirect to={defaultRoomID} />
@@ -218,7 +225,10 @@ export class App extends Component {
                );
             }}/>
             <Route path="/:roomID" render={({ match }) => {
-
+              if (typeof window.ga === 'function') {
+                window.ga('set', 'page', match.pathname + match.search);
+                window.ga('send', 'pageview');
+              }
               return (
                 <div>
                 <Player ref={this.myRef} url={this.state.url} portion="1" openModal={this.doNothing.bind(this)} playing={false} room={match.params.roomID} socket={socket} rid={rid} init={init} userid={this.state.userid} />

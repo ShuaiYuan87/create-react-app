@@ -23,7 +23,7 @@
 }
 
 .modal-backdrop {
-  z-index: 5;
+  z-index: -1;
 }
 
 @keyframes App-logo-spin {
@@ -127,15 +127,14 @@ p {
   width: 100%;
   position: relative;
   background-size: cover;
-  min-height: 500px;
+  min-height: 1000px;
 }
 .Hero .content {
   position: relative;
-
-  width: 650px;
-  left: 50%;
+  z-index: 4;
+  width: 500px;
+  left: 10vw;
   top: 10vw;
-  transform: translate(-50%, -50%);
 }
 .Hero .content .logo {
   max-width: 400px;
@@ -167,7 +166,7 @@ p {
   /* IE6-9 */
   height: 100%;
   position: absolute;
-
+  z-index: 3;
   top: 0;
   left: 0;
   width: 100%;
@@ -241,17 +240,4 @@ p {
   justify-content: center;
   display: flex;
   align-items: flex-end;
-}
-
-.button {
-  background-color: #008CBA;
-  border-radius: 50%;
-  font-size: 12px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
-}
-
-.button:hover {
-  background-color: #4CAF50; /* Green */
-  color: white;
 }

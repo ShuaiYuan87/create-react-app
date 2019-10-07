@@ -3,32 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "input-range-scss": "^1.5.1",
     "prop-types": "^15.6.2",
     "query-string": "^6.1.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-ga": "^2.5.7",
     "react-modal": "^3.5.1",
     "react-motion": "^0.5.2",
     "react-player": "^1.6.4",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.1",
+    "react-scripts": "1.1.4",
     "react-style": "^0.5.5",
     "socket.io": "^2.1.1"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:8989",
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "proxy": "http://localhost:8988/"
 }
